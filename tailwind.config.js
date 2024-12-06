@@ -1,9 +1,19 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./src/**/*.{js,jsx,ts,tsx}'],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-
+    content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+    theme: {
+        extend: {
+            animation: {
+                gradient: 'gradient 8s linear infinite',
+            },
+            keyframes: {
+                gradient: {
+                    to: {
+                        backgroundPosition: 'var(--bg-size) 0',
+                    },
+                },
+            },
+        },
+    },
+    plugins: [],
+};
