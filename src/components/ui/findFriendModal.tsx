@@ -4,6 +4,7 @@ import findFriendsGif from '../../assets/worldwide.gif';
 import { EAS, SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
 import { GradualSpacing } from './GradualSpacing';
 import { useEthersSigner } from '../../wagmi/useEthersSigner';
+import ss from '../../../public/ss.png';
 import {
     extractCoordinates,
     getUserLocation,
@@ -12,13 +13,21 @@ import {
 } from '../../lib';
 import { useAccount } from 'wagmi';
 import toast from 'react-hot-toast';
+import Ar from '../Ar';
 const easContractAddress = '0x4200000000000000000000000000000000000021';
 const schemaUID =
     '0x0d24b34bf33676733015b66b9cdc5a0b6a3f636e61e217de3b249249c66d45b1';
-export default function FindFriendsModal() {
+export default function FindFriendsModal({
+    isArOpen,
+    setIsArOpen,
+}: {
+    isArOpen: boolean;
+    setIsArOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
     const [isOpen, setIsOpen] = useState(false);
     const account = useAccount();
     const [isGifOpen, setIsGifOpen] = useState(true);
+    const [image, setImage] = useState<string | null>(null);
     const signer = useEthersSigner();
     useEffect(() => {
         setIsGifOpen(true);
@@ -183,7 +192,6 @@ export default function FindFriendsModal() {
         await getAttestations();
         toast.dismiss();
         toast.success('Friends Found Nearby');
-        close();
     };
     const handleEas = async () => {
         await handleAttest();
@@ -209,9 +217,14 @@ export default function FindFriendsModal() {
                     <div className="flex min-h-full items-center justify-center p-4">
                         <DialogPanel
                             transition
-                            className="w-full max-w-[250px] rounded-xl bg-white/25 p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+                            className="w-full max-w-[300px] rounded-xl bg-white/25 p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
                         >
-                            {isGifOpen ? (
+                            {isArOpen ? (
+                                <Ar
+                                    setIsArOpen={setIsArOpen}
+                                    setImage={setImage}
+                                />
+                            ) : isGifOpen ? (
                                 <div className="text-left">
                                     <GradualSpacing
                                         duration={0.5}
@@ -225,8 +238,28 @@ export default function FindFriendsModal() {
                                         className="rounded-full p-5 m-2"
                                     />
                                 </div>
+                            ) : image ? (
+                                <div className="relative">
+                                    <img
+                                        src={image}
+                                        alt="Captured Screenshot"
+                                    />
+                                    <img
+                                        src={ss}
+                                        alt="Overlay"
+                                        className="absolute top-0 right-12"
+                                        height={120}
+                                        width={120}
+                                    />
+                                </div>
                             ) : (
-                                <span>gif is hidden</span>
+                                <div
+                                    onClick={() => {
+                                        setIsArOpen(true);
+                                    }}
+                                >
+                                    Make memories
+                                </div>
                             )}
                         </DialogPanel>
                     </div>

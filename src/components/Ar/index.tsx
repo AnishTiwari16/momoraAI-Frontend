@@ -1,8 +1,9 @@
 import { OrbitControls, useGLTF } from '@react-three/drei';
 import { Canvas, useFrame } from '@react-three/fiber';
 import html2canvas from 'html2canvas';
-import { useRef, useState } from 'react';
-import ss from '../../../public/ss.png';
+import { useEffect, useRef, useState } from 'react';
+import ParticleSwarmLoader from '../ui/Stars';
+
 const WebcamBackground = () => {
     return (
         <video
@@ -49,19 +50,22 @@ const NFTModel = () => {
             ref={modelRef}
             object={scene}
             scale={[1.5, 1.5, 1.5]}
-            position={[2, 2, 0]}
+            position={[0.2, 2, 0]}
         />
     );
 };
+
 const ArComponent = ({
-    onClose,
     setImage,
+    setIsArOpen,
 }: {
-    onClose: () => void;
-    setImage: any;
+    setImage: (image: string | null) => void;
+    setIsArOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+    const [isNftEnabled, setIsNftEnabled] = useState(false);
+    const [isNftLoading, setIsNftLoading] = useState(false);
     const captureScreenshot = () => {
-        const element = document.getElementById('capture-area'); // Capture the container element
+        const element = document.getElementById('capture-area');
 
         if (element) {
             html2canvas(element)
@@ -69,11 +73,53 @@ const ArComponent = ({
                     // Convert the canvas to a Blob (PNG)
                     canvas.toBlob((blob) => {
                         if (blob) {
-                            const imageUrl = URL.createObjectURL(blob); // Create a URL for the image
+                            const imageUrl = URL.createObjectURL(blob);
                             setImage(imageUrl);
+                            setIsArOpen(false);
                         }
                     });
-                    onClose();
+                })
+                .catch((err) =>
+                    console.error('Error capturing screenshot:', err)
+                );
+        }
+    };
+    const captureScreenshot2 = () => {
+        const element = document.getElementById('capture-area');
+
+        if (element) {
+            html2canvas(element)
+                .then((canvas) => {
+                    // Convert the canvas to a Blob
+                    canvas.toBlob(async (blob) => {
+                        if (blob) {
+                            // Create FormData and append the Blob
+                            const formData = new FormData();
+                            formData.append('image', blob, 'screenshot.png'); // Append as a PNG file
+
+                            try {
+                                // Send FormData to the server
+                                setIsNftLoading(true);
+                                const res = await fetch(
+                                    'https://1650-14-195-142-82.ngrok-free.app/upload-image',
+                                    {
+                                        method: 'POST',
+                                        body: formData,
+                                    }
+                                );
+
+                                const data = await res.json();
+                                const description = data.description;
+
+                                if (description) {
+                                    setIsNftLoading(false);
+                                    setIsNftEnabled(true);
+                                }
+                            } catch (error) {
+                                console.error('Error uploading image:', error);
+                            }
+                        }
+                    }, 'image/png'); // Specify PNG format
                 })
                 .catch((err) =>
                     console.error('Error capturing screenshot:', err)
@@ -81,9 +127,14 @@ const ArComponent = ({
         }
     };
 
+    useEffect(() => {
+        const timeout = setTimeout(captureScreenshot2, 1000); // Delay to ensure everything is rendered
+        return () => clearTimeout(timeout); // Cleanup on component unmount
+    }, []);
+
     return (
         <div
-            style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}
+            style={{ height: '50vh', width: '100vw', overflow: 'hidden' }}
             id="capture-area"
         >
             {/* Webcam background */}
@@ -93,53 +144,38 @@ const ArComponent = ({
             <Canvas>
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[0, 5, 5]} intensity={1} />
-                <NFTModel />
+                {isNftEnabled && <NFTModel />}
                 <OrbitControls />
             </Canvas>
 
-            {/* Button to capture screenshot */}
-            <button
-                onClick={captureScreenshot}
-                style={{ position: 'absolute', top: 20, left: 20 }}
-            >
-                Capture
-            </button>
+            {isNftLoading ? (
+                <div style={{ position: 'absolute', top: 90, left: 72 }}>
+                    <ParticleSwarmLoader />
+                </div>
+            ) : (
+                <button
+                    onClick={captureScreenshot}
+                    style={{ position: 'absolute', top: 20, left: 20 }}
+                >
+                    Capture
+                </button>
+            )}
         </div>
     );
 };
-const Ar = () => {
-    const [showAR, setShowAR] = useState(false);
-    const [image, setImage] = useState<string | null>(null);
-    const handleButtonClick = () => {
-        setShowAR(true);
-    };
 
-    const handleCloseAR = () => {
-        setShowAR(false);
-    };
+const Ar = ({
+    setIsArOpen,
+
+    setImage,
+}: {
+    setIsArOpen: React.Dispatch<React.SetStateAction<boolean>>;
+
+    setImage: (image: string | null) => void;
+}) => {
     return (
         <div>
-            {/* Button to show AR scene */}
-            {!showAR && (
-                <button onClick={handleButtonClick}>Capture Memories</button>
-            )}
-
-            {/* Render AR scene only if showAR is true */}
-            {showAR && (
-                <ArComponent onClose={handleCloseAR} setImage={setImage} />
-            )}
-            {image && (
-                <div className="relative">
-                    <img src={image} alt="image" />
-                    <img
-                        src={ss}
-                        alt="ss"
-                        className="absolute top-0 right-0"
-                        height={200}
-                        width={200}
-                    />
-                </div>
-            )}
+            <ArComponent setImage={setImage} setIsArOpen={setIsArOpen} />
         </div>
     );
 };
