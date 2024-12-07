@@ -133,9 +133,6 @@ const Browse = () => {
                 </div>
 
                 <div className="flex w-fit sm:w-1/3 justify-end items-center space-x-4">
-                    <span className="text-xs sm:text-sm">
-                        12:59 PM GMT+5:30
-                    </span>
                     <WalletDefault />
                 </div>
             </nav>

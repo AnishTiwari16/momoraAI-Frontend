@@ -14,7 +14,7 @@ import {
 import { useAccount } from 'wagmi';
 import toast from 'react-hot-toast';
 import Ar from '../Ar';
-const easContractAddress = '0x4200000000000000000000000000000000000021';
+export const easContractAddress = '0x4200000000000000000000000000000000000021';
 const schemaUID =
     '0x0d24b34bf33676733015b66b9cdc5a0b6a3f636e61e217de3b249249c66d45b1';
 export default function FindFriendsModal({
@@ -28,6 +28,10 @@ export default function FindFriendsModal({
     const account = useAccount();
     const [isGifOpen, setIsGifOpen] = useState(true);
     const [image, setImage] = useState<string | null>(null);
+    const [location, setLocation] = useState<any>({
+        latitude: 0,
+        longitude: 0,
+    });
     const signer = useEthersSigner();
     useEffect(() => {
         setIsGifOpen(true);
@@ -153,6 +157,7 @@ export default function FindFriendsModal({
         toast.dismiss();
         toast.loading('Creating attestation onchain');
         const location = await getUserLocation();
+        setLocation(location);
         const eas: any = new EAS(easContractAddress);
         eas.connect(signer);
         const schemaEncoder = new SchemaEncoder(
@@ -192,6 +197,7 @@ export default function FindFriendsModal({
         await getAttestations();
         toast.dismiss();
         toast.success('Friends Found Nearby');
+        setIsGifOpen(false);
     };
     const handleEas = async () => {
         await handleAttest();
@@ -221,6 +227,7 @@ export default function FindFriendsModal({
                         >
                             {isArOpen ? (
                                 <Ar
+                                    location={location}
                                     setIsArOpen={setIsArOpen}
                                     setImage={setImage}
                                 />
