@@ -7,6 +7,7 @@ import calenderImage from '../assets/calenderImage.png';
 import { fetchUserBalance, getUserLocation, sendFunds } from '../lib';
 import { useEthersSigner } from '../wagmi/useEthersSigner';
 import { useEthersProvider } from '../wagmi/useEthersProvider';
+import FindFriendsModal from '../components/ui/findFriendsModal';
 const easContractAddress = '0x4200000000000000000000000000000000000021';
 const schemaUID =
     '0x0d24b34bf33676733015b66b9cdc5a0b6a3f636e61e217de3b249249c66d45b1';
@@ -69,9 +70,9 @@ const Browse = () => {
         console.log('New attestation UID:', newAttestationUID);
     };
 
-    const handleMakeFriends = async () => {
-        await handleAttest();
-    };
+    // const handleMakeFriends = async () => {
+    //     await handleAttest();
+    // };
     const getBalance = async (address: string) => {
         const balance = await fetchUserBalance(address);
         if (balance < '0.001') {
@@ -92,7 +93,7 @@ const Browse = () => {
                 </div>
 
                 {/* Center - Navigation Links */}
-                <div className="flex justify-center space-x-4 sm:space-x-6 text-xs sm:text-sm">
+                <div className="flex justify-center space-x-3 sm:space-x-6 text-xs sm:text-sm">
                     <a
                         href="#"
                         className="hover:underline flex items-center space-x-1"
@@ -211,12 +212,9 @@ const Browse = () => {
                 <div className="mt-8">
                     <div className="flex justify-between items-center">
                         <h2 className="text-lg font-semibold">My Calendars</h2>
-                        <button
-                            onCanPlay={handleMakeFriends}
-                            className="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium"
-                        >
-                            Add friends
-                        </button>
+                        <FindFriendsModal />
+                        {/* onCanPlay={handleMakeFriends} */}
+
                     </div>
                     <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {CalendarsContent.map((calendar) => (

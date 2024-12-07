@@ -12,6 +12,7 @@
   "dependencies": {
     "@coinbase/onchainkit": "^0.35.8",
     "@ethereum-attestation-service/eas-sdk": "^2.7.0",
+    "@headlessui/react": "^2.2.0",
     "@huddle01/react": "^2.2.4",
     "@react-three/drei": "^9.120.1",
     "@react-three/fiber": "^8.17.10",
