@@ -1,20 +1,15 @@
-import { cookieStorage, createConfig, createStorage, http } from 'wagmi';
+import { createConfig, http } from 'wagmi';
 import { baseSepolia } from 'wagmi/chains';
-import { coinbaseWallet, injected } from 'wagmi/connectors';
+import { coinbaseWallet } from 'wagmi/connectors';
 
 export function getConfig() {
     return createConfig({
         chains: [baseSepolia],
         connectors: [
-            injected(),
             coinbaseWallet({
-                appName: 'Create Wagmi',
-                preference: 'smartWalletOnly',
+                appName: 'onchainkit',
             }),
         ],
-        storage: createStorage({
-            storage: cookieStorage,
-        }),
         ssr: true,
         transports: {
             [baseSepolia.id]: http(),
