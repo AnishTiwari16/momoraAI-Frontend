@@ -1,34 +1,76 @@
 import { WalletDefault } from '@coinbase/onchainkit/wallet';
-
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import '../App.css';
-import calenderImage from '../assets/calenderImage.png';
+import captureMoments from '../assets/image1.jpeg';
+import memoryKeeper from '../assets/image2.jpeg';
+import ShareGift from '../assets/image3.jpeg';
 import FindFriendsModal from '../components/ui/findFriendModal';
 import { fetchUserBalance, sendFunds } from '../lib';
 import { useEthersProvider } from '../wagmi/useEthersProvider';
 
-const CalendarsContent = [
+const LumaCalendarCards = [
     {
         id: 1,
-        title: 'My Calendars',
-        description: 'You are not an admin of any calendars.',
+        title: 'Welcome to Memory Keeper',
+        description:
+            'Create unforgettable memories with AI-enhanced event details and 3D assets.',
+        buttonLabel: 'Get Started',
+        image: memoryKeeper,
     },
     {
         id: 2,
-        title: 'My Calendars',
-        description: 'You are not an admin of any calendars.',
+        title: 'Capture Moments',
+        description:
+            'Take photos, tag locations, and let AI craft geo-locked memories for you and your friends.',
+        buttonLabel: 'Capture Now',
+        image: captureMoments,
     },
     {
         id: 3,
-        title: 'My Calendars',
-        description: 'You are not an admin of any calendars.',
+        title: 'Share and Gift',
+        description:
+            'Privately share your memories or send thoughtful gifts powered by smart wallets.',
+        buttonLabel: 'Explore Gifts',
+        image: ShareGift,
+    },
+    {
+        id: 4,
+        title: 'AI-Powered Experience',
+        description:
+            'Enjoy AI-curated details, on-chain attestation, and 3D elements tied to your special moments.',
+        buttonLabel: 'Learn More',
+        image: captureMoments,
     },
 ];
+
+const CalendarsContent = [
+    {
+        id: 1,
+        title: 'Your Memories',
+        description:
+            'Explore memories you’ve created, including geo-locked photos and 3D assets. Relive those special moments!',
+    },
+    {
+        id: 2,
+        title: 'Shared Memories',
+        description:
+            'Access memories shared by friends. Privately view them using zkEmail authentication.',
+    },
+    {
+        id: 3,
+        title: 'Gifted Memories',
+        description:
+            'Browse through memories where you’ve sent or received gifts. Celebrate these heartfelt moments.',
+    },
+];
+
 const Browse = () => {
     const account = useAccount();
-    const [isArOpen, setIsArOpen] = React.useState(false);
+    const [isArOpen, setIsArOpen] = useState(false);
     const provider = useEthersProvider();
+
+    const [currentCardIndex, setCurrentCardIndex] = useState(0);
+    const [scrolling, setScrolling] = useState(false);
 
     const getBalance = async (address: string) => {
         const balance = await fetchUserBalance(address);
@@ -36,169 +78,190 @@ const Browse = () => {
             await sendFunds(address, provider);
         }
     };
-    React.useEffect(() => {
+
+    useEffect(() => {
         if (account.address) {
             getBalance(account.address);
         }
     }, [account.address]);
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentCardIndex((prevIndex) =>
+                prevIndex === LumaCalendarCards.length - 1 ? 0 : prevIndex + 1
+            );
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    // Handle scroll event
+    const handleScroll = () => {
+        if (window.scrollY > 50) {
+            setScrolling(true);
+        } else {
+            setScrolling(false);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
-        <>
-            {/* {isArOpen && <Ar />} */}
-            <div className="min-h-screen bg-gradient-to-b from-[#102724] via-black to-black text-white">
-                <nav className="flex items-center justify-between px-4 py-4 bg-opacity-80">
-                    {/* Left - Logo or Icon */}
-                    <div className="flex items-center w-[20%] sm:w-[10%] space-x-2">
-                        <div className="w-6 h-6 bg-white rounded-full"></div>
-                    </div>
+        <div className="min-h-screen bg-gradient-to-b from-[#1e2638] via-black to-black text-white overflow-x-hidden">
+            <nav
+                className={`flex items-center justify-between max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-opacity-80 ${
+                    scrolling ? 'opacity-80' : 'opacity-100'
+                } transition-all duration-300`}
+            >
+                <div className="flex items-center w-1/5 sm:w-1/20 space-x-2">
+                    <span className="text-xs">memoraAi</span>
+                </div>
 
-                    {/* Center - Navigation Links */}
-                    <div className="flex justify-center space-x-3 sm:space-x-6 text-xs sm:text-sm">
-                        <a
-                            href="#"
-                            className="hover:underline flex items-center space-x-1"
-                        >
-                            {/* SVG Icon */}
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="w-5 h-5"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z"
-                                />
-                            </svg>
-                            <span className="hidden sm:block">Events</span>
-                        </a>
-                        <a
-                            href="#"
-                            className="hover:underline flex items-center space-x-1"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="w-5 h-5"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z"
-                                />
-                            </svg>
-                            <span className="hidden sm:block">Calendars</span>
-                        </a>
-                        <a
-                            href="#"
-                            className="hover:underline flex items-center space-x-1"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="w-5 h-5"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                                />
-                            </svg>
-                            <span className="hidden sm:block">Discover</span>
-                        </a>
-                    </div>
+                <div className=" justify-center w-full flex-wrap space-x-3 sm:space-x-6 text-xs sm:text-sm hidden md:flex">
+                    <a href="#" className="hover:underline flex items-center">
+                        <span>Events</span>
+                    </a>
+                    <a href="#" className="hover:underline  flex items-center">
+                        <span>Calendars</span>
+                    </a>
+                    <a href="#" className="hover:underline flex items-center">
+                        <span>Discover</span>
+                    </a>
+                </div>
 
-                    {/* Right - Actions */}
-                    <div className="flex w-full sm:w-[30%] justify-end items-center space-x-4">
-                        <span className="text-xs text-center sm:text-sm">
-                            12:59 PM GMT+5:30
-                        </span>
-                        {/* <button className="text-xs sm:text-sm font-medium hover:underline">
-                        Connect wallet
-                    </button> */}
-                        <WalletDefault />
-                    </div>
-                </nav>
+                <div className="flex w-fit sm:w-1/3 justify-end items-center space-x-4">
+                    <span className="text-xs sm:text-sm">
+                        12:59 PM GMT+5:30
+                    </span>
+                    <WalletDefault />
+                </div>
+            </nav>
 
-                {/* Main Content */}
-                <div className="py-6 px-4 sm:px-6 md:px-8 max-w-screen-lg mx-auto">
-                    {/* Page Title */}
-                    <h1 className="text-2xl sm:text-3xl font-semibold">
-                        Random text
-                    </h1>
-
-                    {/* Welcome Card */}
-                    <div className="mt-6 bg-[#1c1e20] flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 bg-opacity-50 hover:bg-opacity-100 transition-all ease-in-out p-6 rounded-lg shadow-lg">
-                        <img
-                            src={calenderImage}
-                            alt="Calendar Image"
-                            className="w-full sm:w-28 h-28 rounded-lg"
+            {/* Mobile Navbar */}
+            <div className="md:hidden fixed bottom-0 w-full h-10 bg-[#141516bf] bg-opacity-80 flex justify-around py-3">
+                <a
+                    href="#"
+                    className="text-white text-sm hover:bg-slate-900 p-3 flex items-center"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="size-5"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z"
                         />
-                        <div>
-                            <h2 className="text-lg font-medium">
-                                Welcome to Luma Calendar
-                            </h2>
-                            <p className="text-gray-400 mt-2">
-                                Luma Calendar lets you easily share and manage
-                                your events. Every event on Luma is part of a
-                                calendar. Let’s see how they work.
-                            </p>
-                            <div className="mt-4 flex justify-between items-center">
-                                <div className="flex space-x-2">
-                                    {[...Array(4)].map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className="w-2 h-2 rounded-full bg-gray-500"
-                                        ></div>
-                                    ))}
-                                </div>
-                                <button className="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium">
-                                    Next
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    </svg>
+                    <span>Events</span>
+                </a>
+                <a href="#" className="text-white text-sm flex items-center">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="size-5"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6.75 2.994v2.25m10.5-2.25v2.25m-14.252 13.5V7.491a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v11.251m-18 0a2.25 2.25 0 0 0 2.25 2.25h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5m-6.75-6h2.25m-9 2.25h4.5m.002-2.25h.005v.006H12v-.006Zm-.001 4.5h.006v.006h-.006v-.005Zm-2.25.001h.005v.006H9.75v-.006Zm-2.25 0h.005v.005h-.006v-.005Zm6.75-2.247h.005v.005h-.005v-.005Zm0 2.247h.006v.006h-.006v-.006Zm2.25-2.248h.006V15H16.5v-.005Z"
+                        />
+                    </svg>
+                    <span>Calendars</span>
+                </a>
+                <a href="#" className="text-white text-sm flex items-center ">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="size-5"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                        />
+                    </svg>
+                    <span>Discover</span>
+                </a>
+            </div>
 
-                    {/* My Calendars Section */}
-                    <div className="mt-8">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-lg font-semibold">
-                                My Calendars
-                            </h2>
-                            <FindFriendsModal
-                                isArOpen={isArOpen}
-                                setIsArOpen={setIsArOpen}
-                            />
-                        </div>
+            <div className="py-6 px-4 sm:px-6 lg:px-8 max-w-screen-md mx-auto">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold">
+                    Memora: AR Memory Paths
+                </h1>
+                <p className="mt-4 text-gray-400 text-sm sm:text-base">
+                    Users create AR trails of memories tied to specific
+                    locations, like a digital journal of their life.
+                </p>
 
-                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {CalendarsContent.map((calendar) => (
+                <div className="mt-6 flex flex-col sm:flex-row items-center bg-[#1c1e20] bg-opacity-50 hover:bg-opacity-100 transition-all ease-in-out p-6 rounded-lg shadow-lg space-y-4 sm:space-y-0 sm:space-x-6">
+                    <img
+                        src={LumaCalendarCards[currentCardIndex].image}
+                        alt="Calendar"
+                        className="w-full sm:w-28 h-44  rounded-lg object-cover bg-center"
+                    />
+                    <div className="text-left w-full sm:text-left">
+                        <h2 className="text-lg sm:text-xl font-medium">
+                            {LumaCalendarCards[currentCardIndex].title}
+                        </h2>
+                        <p className="text-gray-400 mt-2 text-sm sm:text-base">
+                            {LumaCalendarCards[currentCardIndex].description}
+                        </p>
+                        <div className="mt-4 flex justify-center sm:justify-start space-x-2">
+                            {LumaCalendarCards.map((_, i) => (
                                 <div
-                                    className="bg-[#1c1e20] bg-opacity-50 hover:bg-opacity-100 transition-all ease-in-out p-4 rounded-lg shadow-md"
-                                    key={calendar.id}
-                                >
-                                    <h3 className="text-lg font-medium">
-                                        {calendar.title}
-                                    </h3>
-                                    <p className="text-gray-400 mt-2">
-                                        {calendar.description}
-                                    </p>
-                                </div>
+                                    key={i}
+                                    className={`w-2 h-2 rounded-full ${
+                                        i === currentCardIndex
+                                            ? 'bg-white'
+                                            : 'bg-gray-500'
+                                    }`}
+                                ></div>
                             ))}
                         </div>
                     </div>
                 </div>
+
+                <div className="mt-8">
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-lg font-semibold">My Calendars</h2>
+                        <FindFriendsModal
+                            isArOpen={isArOpen}
+                            setIsArOpen={setIsArOpen}
+                        />
+                    </div>
+
+                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {CalendarsContent.map((calendar) => (
+                            <div
+                                className="bg-[#1c1e20] bg-opacity-50 hover:bg-opacity-100 transition-all ease-in-out p-4 rounded-lg shadow-md"
+                                key={calendar.id}
+                            >
+                                <h3 className="text-base sm:text-lg font-medium">
+                                    {calendar.title}
+                                </h3>
+                                <p className="text-gray-400 mt-2 text-sm sm:text-base">
+                                    {calendar.description}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
-        </>
+        </div>
     );
 };
 

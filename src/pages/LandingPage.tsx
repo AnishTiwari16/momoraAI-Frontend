@@ -4,92 +4,20 @@ import { AnimatedGradientText } from '../components/ui/AnimatedGradientText';
 
 import { cn } from '../lib/utils';
 import { BackgroundLines } from '../components/ui/background-lines';
+import MemoraAiLogo from '../components/ui/logo';
+import { AnimatedTextGradient } from '../components/ui/AnimatedTextGradient';
 
 const LandingPage = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
-        <div className="flex min-h-screen flex-col items-center bg-black text-white overflow-hidden">
-            {/* Navbar */}
-            <nav className="w-full flex justify-between items-center p-4 md:px-8 lg:px-16 bg-black relative z-50">
-                {/* Hamburger Menu (Visible on smaller devices) */}
-                <div className="items-center md:hidden">
-                    {!isMenuOpen ? (
-                        <svg
-                            onClick={() => setIsMenuOpen(true)}
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="w-6 h-6 cursor-pointer text-white"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                            />
-                        </svg>
-                    ) : (
-                        <svg
-                            onClick={() => setIsMenuOpen(false)}
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="w-6 h-6 cursor-pointer text-white"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    )}
-                </div>
-
-                {/* Logo */}
-                <div className="flex items-center space-x-4">
-                    <img
-                        src="https://via.placeholder.com/40"
-                        alt="Logo"
-                        className="w-10 h-auto"
-                    />
-                </div>
-
-                {/* Links (Visible only on desktop) */}
-                <div className="hidden md:flex space-x-8 text-sm font-medium">
-                    <a href="#" className="hover:underline">
-                        Our Vision
-                    </a>
-                    <a href="#" className="hover:underline">
-                        Discover
-                    </a>
-                    <a href="#" className="hover:underline">
-                        Pricing
-                    </a>
-                </div>
-
-                {/* Buttons */}
-                <div className="flex items-center space-x-4">
-                    <button className="bg-gray-800 px-4 py-2 rounded-md">
-                        <img
-                            src="../src/assets/twitter.png"
-                            alt="Twitter"
-                            className="w-5 h-5"
-                        />
-                    </button>
-                    <Link
-                        to={'/browse'}
-                        className="bg-gray-800 px-4 py-2 rounded-md text-sm font-medium"
-                    >
-                        Launch App
-                    </Link>
+        <div className="flex min-h-screen flex-col items-center  bg-black text-white overflow-hidden">
+            <nav className="w-full flex justify-between items-center p-4 md:px-8 lg:px-16 relative z-50">
+                <div className="flex items-center ">
+                    <MemoraAiLogo />
                 </div>
             </nav>
 
-            {/* Mobile Menu (Visible when hamburger menu is clicked) */}
             <div
                 className={`absolute top-0 left-0 w-full bg-black bg-opacity-75 transform transition-transform duration-300 z-40 ${
                     isMenuOpen ? 'translate-y-0' : '-translate-y-full'
@@ -121,7 +49,7 @@ const LandingPage = () => {
             </div>
 
             {/* Hero Section */}
-            <div className="relative flex items-center justify-center w-full min-h-screen overflow-hidden px-4 md:px-8 lg:px-16">
+            <div className="relative flex items-center justify-center w-full min-h-[70vh] overflow-hidden px-4 md:px-8 lg:px-16">
                 {/* Background Effect */}
                 <BackgroundLines className="flex items-center justify-center w-full flex-col px-4">
                     {/* Text Content */}
@@ -156,15 +84,9 @@ const LandingPage = () => {
                         </p>
                         {/* Call-to-Action Buttons */}
                         <div className="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4 mt-6">
-                            <Link
-                                to={'/browse'}
-                                className="group/button relative overflow-hidden rounded-md border border-blue-500/20 bg-white px-4 py-1 text-xs font-medium text-blue-500 transition-all duration-150 hover:border-blue-500 active:scale-95"
-                            >
-                                <span className="absolute bottom-0 left-0 z-0 h-0 w-full bg-gradient-to-t from-blue-600 to-blue-500 transition-all duration-500 group-hover/button:h-full" />
-                                <span className="relative z-10 transition-all duration-500 group-hover/button:text-white">
-                                    Launch App
-                                </span>
-                            </Link>
+                            <AnimatedTextGradient>
+                                <Link to={'/browse'}>Launch App 🚀</Link>
+                            </AnimatedTextGradient>
                         </div>
                     </div>
                 </BackgroundLines>

@@ -84,21 +84,18 @@ const ArComponent = ({
                 );
         }
     };
-    const captureScreenshot2 = () => {
+    const generateImageFromApi = () => {
         const element = document.getElementById('capture-area');
 
         if (element) {
             html2canvas(element)
                 .then((canvas) => {
-                    // Convert the canvas to a Blob
                     canvas.toBlob(async (blob) => {
                         if (blob) {
-                            // Create FormData and append the Blob
                             const formData = new FormData();
-                            formData.append('image', blob, 'screenshot.png'); // Append as a PNG file
+                            formData.append('image', blob, 'screenshot.png');
 
                             try {
-                                // Send FormData to the server
                                 setIsNftLoading(true);
                                 const res = await fetch(
                                     'https://1650-14-195-142-82.ngrok-free.app/upload-image',
@@ -128,7 +125,7 @@ const ArComponent = ({
     };
 
     useEffect(() => {
-        const timeout = setTimeout(captureScreenshot2, 1000); // Delay to ensure everything is rendered
+        const timeout = setTimeout(generateImageFromApi, 1000); // Delay to ensure everything is rendered
         return () => clearTimeout(timeout); // Cleanup on component unmount
     }, []);
 
