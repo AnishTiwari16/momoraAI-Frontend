@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogPanel } from '@headlessui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import findFriendsGif from '../../assets/worldwide.gif';
 import { EAS, SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
 import { GradualSpacing } from './GradualSpacing';
@@ -14,6 +14,7 @@ import {
 import { useAccount } from 'wagmi';
 import toast from 'react-hot-toast';
 import Ar from '../Ar';
+import StarWarsButton from './ButtonNext';
 export const easContractAddress = '0x4200000000000000000000000000000000000021';
 const schemaUID =
     '0x0d24b34bf33676733015b66b9cdc5a0b6a3f636e61e217de3b249249c66d45b1';
@@ -26,16 +27,13 @@ export default function FindFriendsModal({
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const account = useAccount();
-    const [isGifOpen, setIsGifOpen] = useState(true);
+    const [isGifOpen, setIsGifOpen] = useState(false);
     const [image, setImage] = useState<string | null>(null);
     const [location, setLocation] = useState<any>({
         latitude: 0,
         longitude: 0,
     });
     const signer = useEthersSigner();
-    useEffect(() => {
-        setIsGifOpen(true);
-    }, [isOpen]);
     function open() {
         setIsOpen(true);
     }
@@ -141,9 +139,14 @@ export default function FindFriendsModal({
                         secondLong
                     );
                     if (distance <= 10) {
-                        setIsGifOpen(true);
+                        toast.dismiss();
+                        toast.success('Friends Found Nearby');
+                        setIsGifOpen(false);
                     } else {
                         setIsGifOpen(false);
+                        toast.dismiss();
+                        toast.success('No Friends Found Nearby!');
+                        close();
                     }
                 }
             } else {
@@ -154,7 +157,6 @@ export default function FindFriendsModal({
         }
     };
     const handleAttest = async () => {
-        toast.dismiss();
         toast.loading('Creating attestation onchain');
         const location = await getUserLocation();
         setLocation(location);
@@ -188,16 +190,16 @@ export default function FindFriendsModal({
                 data: encodedData,
             },
         });
+        toast.dismiss();
+        toast.loading('Attesting onchain please wait');
         await transaction.wait();
         toast.dismiss();
         toast.success('Attestation created successfully');
-        open();
         toast.dismiss();
         toast.loading('Finding Friends Nearby');
+        open();
+        setIsGifOpen(true);
         await getAttestations();
-        toast.dismiss();
-        toast.success('Friends Found Nearby');
-        setIsGifOpen(false);
     };
     const handleEas = async () => {
         await handleAttest();
@@ -254,7 +256,7 @@ export default function FindFriendsModal({
                                     <img
                                         src={ss}
                                         alt="Overlay"
-                                        className="absolute top-0 right-12"
+                                        className="absolute top-0 right-1"
                                         height={120}
                                         width={120}
                                     />
@@ -264,8 +266,24 @@ export default function FindFriendsModal({
                                     onClick={() => {
                                         setIsArOpen(true);
                                     }}
+                                    className="flex items-center justify-center flex-col"
                                 >
-                                    Make memories
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={1.5}
+                                        stroke="#ffffff"
+                                        className="size-16 mb-7 border rounded-full p-2"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"
+                                        />
+                                    </svg>
+
+                                    <StarWarsButton />
                                 </div>
                             )}
                         </DialogPanel>

@@ -7,6 +7,7 @@ import ShareGift from '../assets/image3.jpeg';
 import FindFriendsModal from '../components/ui/findFriendModal';
 import { fetchUserBalance, sendFunds } from '../lib';
 import { useEthersProvider } from '../wagmi/useEthersProvider';
+import { Link } from 'react-router-dom';
 
 const LumaCalendarCards = [
     {
@@ -23,7 +24,7 @@ const LumaCalendarCards = [
         description:
             'Take photos, tag locations, and let AI craft geo-locked memories for you and your friends.',
         buttonLabel: 'Capture Now',
-        image: captureMoments,
+        image: ShareGift,
     },
     {
         id: 3,
@@ -138,9 +139,9 @@ const Browse = () => {
             </nav>
 
             {/* Mobile Navbar */}
-            <div className="md:hidden fixed bottom-0 w-full h-10 bg-[#141516bf] bg-opacity-80 flex justify-around py-3">
-                <a
-                    href="#"
+            <div className="md:hidden fixed items-center bottom-0 w-full h-10 bg-[#141516bf] bg-opacity-80 flex justify-around py-3">
+                <Link
+                    to={'/browse'}
                     className="text-white text-sm hover:bg-slate-900 p-3 flex items-center"
                 >
                     <svg
@@ -149,7 +150,7 @@ const Browse = () => {
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="size-5"
+                        className="size-5 mr-2"
                     >
                         <path
                             strokeLinecap="round"
@@ -157,9 +158,12 @@ const Browse = () => {
                             d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z"
                         />
                     </svg>
-                    <span>Events</span>
-                </a>
-                <a href="#" className="text-white text-sm flex items-center">
+                    <span>Home</span>
+                </Link>
+                <Link
+                    to="/transactions"
+                    className="text-white text-sm flex items-center"
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -174,8 +178,8 @@ const Browse = () => {
                             d="M6.75 2.994v2.25m10.5-2.25v2.25m-14.252 13.5V7.491a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v11.251m-18 0a2.25 2.25 0 0 0 2.25 2.25h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5m-6.75-6h2.25m-9 2.25h4.5m.002-2.25h.005v.006H12v-.006Zm-.001 4.5h.006v.006h-.006v-.005Zm-2.25.001h.005v.006H9.75v-.006Zm-2.25 0h.005v.005h-.006v-.005Zm6.75-2.247h.005v.005h-.005v-.005Zm0 2.247h.006v.006h-.006v-.006Zm2.25-2.248h.006V15H16.5v-.005Z"
                         />
                     </svg>
-                    <span>Calendars</span>
-                </a>
+                    <span>Transactions</span>
+                </Link>
                 <a href="#" className="text-white text-sm flex items-center ">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -234,7 +238,7 @@ const Browse = () => {
 
                 <div className="mt-8">
                     <div className="flex justify-between items-center">
-                        <h2 className="text-lg font-semibold">My Calendars</h2>
+                        <h2 className="text-lg font-semibold">Discover</h2>
                         <FindFriendsModal
                             isArOpen={isArOpen}
                             setIsArOpen={setIsArOpen}

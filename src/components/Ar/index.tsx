@@ -50,8 +50,8 @@ const NFTModel = () => {
         <primitive
             ref={modelRef}
             object={scene}
-            scale={[1.5, 1.5, 1.5]}
-            position={[0.2, 2, 0]}
+            scale={[1, 1, 1]}
+            position={[0, 2, 0]}
         />
     );
 };
@@ -175,11 +175,9 @@ const ArComponent = ({
                                 const data = await res.json();
                                 const tuid = await data.attestationUID;
                                 console.log(tuid);
-                                const val = data.success;
-                                if (val) {
-                                    setIsNftLoading(false);
-                                    setIsNftEnabled(true);
-                                }
+
+                                setIsNftLoading(false);
+                                setIsNftEnabled(true);
                             } catch (error) {
                                 console.error('Error uploading image:', error);
                             }
