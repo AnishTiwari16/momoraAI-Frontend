@@ -56,3 +56,42 @@ export const fetchUserBalance = async (address: string) => {
 
     return etherBalance;
 };
+export function hexToString(hex: any) {
+    let result = '';
+    for (let i = 0; i < hex.length; i += 2) {
+        const hexPair = hex.substr(i, 2);
+        result += String.fromCharCode(parseInt(hexPair, 16));
+    }
+    return result;
+}
+export const extractCoordinates = (
+    decodedData: string
+): { latitude: number | null; longitude: number | null } => {
+    const latitudeMatch = decodedData.match(/Latitude:\s*(-?\d+\.\d+)/);
+    const longitudeMatch = decodedData.match(/Longitude:\s*(-?\d+\.\d+)/);
+
+    return {
+        latitude: latitudeMatch ? parseFloat(latitudeMatch[1]) : null,
+        longitude: longitudeMatch ? parseFloat(longitudeMatch[1]) : null,
+    };
+};
+export const haversineDistance = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+): number => {
+    const R = 6371000; // Earth radius in meters
+    const φ1 = lat1 * (Math.PI / 180); // Convert degrees to radians
+    const φ2 = lat2 * (Math.PI / 180); // Convert degrees to radians
+    const Δφ = (lat2 - lat1) * (Math.PI / 180); // Difference in latitude
+    const Δλ = (lon2 - lon1) * (Math.PI / 180); // Difference in longitude
+
+    const a =
+        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in meters
+};

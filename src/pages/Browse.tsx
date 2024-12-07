@@ -4,7 +4,14 @@ import React from 'react';
 import { useAccount } from 'wagmi';
 import '../App.css';
 import calenderImage from '../assets/calenderImage.png';
-import { fetchUserBalance, getUserLocation, sendFunds } from '../lib';
+import {
+    extractCoordinates,
+    fetchUserBalance,
+    getUserLocation,
+    haversineDistance,
+    hexToString,
+    sendFunds,
+} from '../lib';
 import { useEthersSigner } from '../wagmi/useEthersSigner';
 import { useEthersProvider } from '../wagmi/useEthersProvider';
 const easContractAddress = '0x4200000000000000000000000000000000000021';
@@ -29,7 +36,7 @@ const CalendarsContent = [
 ];
 const Browse = () => {
     const account = useAccount();
-
+    const [isFriendClose, setIsFriendClose] = React.useState(false);
     const signer = useEthersSigner();
     const provider = useEthersProvider();
     const handleAttest = async () => {
@@ -83,6 +90,119 @@ const Browse = () => {
             getBalance(account.address);
         }
     }, [account.address]);
+    const handleAttestation = async () => {
+        try {
+            // Step 1: Fetch the list of attestations
+            const response = await fetch(
+                'https://base-sepolia.easscan.org/graphql',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: `
+                            query Attestations($where: AttestationWhereInput, $orderBy: [AttestationOrderByWithRelationInput!], $take: Int) {
+                                attestations(where: $where, orderBy: $orderBy, take: $take) {
+                                    id
+                                    recipient
+                                    schemaId
+                                    time
+                                }
+                            }
+                        `,
+                        variables: {
+                            where: {
+                                schemaId: {
+                                    equals: '0x0d24b34bf33676733015b66b9cdc5a0b6a3f636e61e217de3b249249c66d45b1',
+                                },
+                            },
+                            orderBy: [
+                                {
+                                    time: 'desc',
+                                },
+                            ],
+                            take: 10,
+                        },
+                    }),
+                }
+            );
+
+            const result = await response.json();
+
+            if (result.data.attestations.length > 0) {
+                // Fetch details for each attestation
+                const attestationDetailsPromises = result.data.attestations.map(
+                    async (attestation: any) => {
+                        const attestationId = attestation.id;
+
+                        const attestationDetailsResponse = await fetch(
+                            'https://base-sepolia.easscan.org/graphql',
+                            {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    query: `
+                                    query Attestation($id: String!) {
+                                        attestation(where: { id: $id }) {
+                                            id
+                                            attester
+                                            recipient
+                                            refUID
+                                            revocable
+                                            revocationTime
+                                            expirationTime
+                                            data
+                                        }
+                                    }
+                                `,
+                                    variables: {
+                                        id: attestationId,
+                                    },
+                                }),
+                            }
+                        );
+
+                        const attestationDetailsResult =
+                            await attestationDetailsResponse.json();
+                        return attestationDetailsResult.data.attestation;
+                    }
+                );
+
+                // Wait for all promises to resolve
+                const details = await Promise.all(attestationDetailsPromises);
+                const first = details[0].data;
+                const second = details[1].data;
+                const firstHex = hexToString(first);
+                const secondHex = hexToString(second);
+                const { latitude: FirstLat, longitude: FirstLong } =
+                    extractCoordinates(firstHex);
+                const { latitude: secondLat, longitude: secondLong } =
+                    extractCoordinates(secondHex);
+
+                if (FirstLat && FirstLong && secondLat && secondLong) {
+                    const distance = haversineDistance(
+                        FirstLat,
+                        FirstLong,
+                        secondLat,
+                        secondLong
+                    );
+                    if (distance <= 10) {
+                        setIsFriendClose(true);
+                    } else {
+                        setIsFriendClose(false);
+                    }
+                }
+            } else {
+                console.error('No attestations found.');
+            }
+        } catch (error) {
+            console.error('Error fetching attestation data:', error);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#102724] via-black to-black text-white">
             <nav className="flex items-center justify-between px-4 py-4 bg-opacity-80">
@@ -218,6 +338,7 @@ const Browse = () => {
                             Add friends
                         </button>
                     </div>
+                    <div>{isFriendClose}</div>
                     <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {CalendarsContent.map((calendar) => (
                             <div
@@ -234,6 +355,7 @@ const Browse = () => {
                         ))}
                     </div>
                 </div>
+                <div onClick={handleAttestation}>Get attestations</div>
             </div>
         </div>
     );
