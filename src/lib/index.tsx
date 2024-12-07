@@ -46,3 +46,13 @@ export const sendFunds = async (address: string, pro: any) => {
         console.error(err);
     }
 };
+export const fetchUserBalance = async (address: string) => {
+    const provider = new ethers.JsonRpcProvider('https://sepolia.base.org');
+    // Fetch the balance in wei
+    const weiBalance = await provider.getBalance(address);
+
+    // Convert from wei to ether and update the state
+    const etherBalance = ethers.formatEther(weiBalance);
+
+    return etherBalance;
+};

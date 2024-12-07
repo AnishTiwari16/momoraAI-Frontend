@@ -6,6 +6,7 @@ import { baseSepolia } from 'viem/chains';
 import { WagmiProvider } from 'wagmi';
 import { getConfig } from '../config';
 import { HuddleProvider, HuddleClient } from '@huddle01/react';
+import { Toaster } from 'react-hot-toast';
 const huddleClient = new HuddleClient({
     projectId: 'pi_62JQFNaysQ5Sh3Rc',
     options: {
@@ -25,6 +26,27 @@ const Providers = ({ children }: { children: ReactNode }) => {
                     chain={baseSepolia}
                 >
                     <HuddleProvider client={huddleClient}>
+                        <Toaster
+                            position="top-center"
+                            reverseOrder={false}
+                            gutter={8}
+                            containerClassName=""
+                            containerStyle={{}}
+                            toastOptions={{
+                                // Define default options
+                                className: '',
+                                duration: 5000,
+                                style: {
+                                    background: '#363636',
+                                    color: '#fff',
+                                },
+
+                                // Default options for specific types
+                                success: {
+                                    duration: 3000,
+                                },
+                            }}
+                        />
                         {children}
                     </HuddleProvider>
                 </OnchainKitProvider>
