@@ -2,7 +2,7 @@ import { Address, Name } from '@coinbase/onchainkit/identity';
 import { color } from '@coinbase/onchainkit/theme';
 import { WalletDefault } from '@coinbase/onchainkit/wallet';
 import { EAS, SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
-import { useLocalVideo, usePeerIds, useRoom } from '@huddle01/react';
+import { useLocalVideo, useRoom } from '@huddle01/react';
 import { useEffect, useRef, useState } from 'react';
 import { baseSepolia } from 'viem/chains';
 import { useAccount } from 'wagmi';
@@ -118,11 +118,11 @@ const Browse = () => {
             token: data.token,
         });
     };
-    const { peerIds } = usePeerIds({
-        roles: [],
-        labels: [],
-        onPeerRoleUpdate(data) {},
-    });
+    // const { peerIds } = usePeerIds({
+    //     roles: [],
+    //     labels: [],
+    //     onPeerRoleUpdate(data) {},
+    // });
 
     const videoRef = useRef<HTMLVideoElement>(null);
     // const { stream } = useRemoteVideo({
@@ -139,6 +139,7 @@ const Browse = () => {
             await sendFunds(account.address, pro);
         }
     };
+    console.log(huddle);
     return (
         <div>
             <WalletDefault />
