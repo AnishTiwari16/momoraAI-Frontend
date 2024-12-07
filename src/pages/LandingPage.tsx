@@ -84,9 +84,11 @@ const LandingPage = () => {
                         </p>
                         {/* Call-to-Action Buttons */}
                         <div className="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4 mt-6">
-                            <AnimatedTextGradient>
-                                <Link to={'/browse'}>Launch App 🚀</Link>
-                            </AnimatedTextGradient>
+                            <Link to={'/browse'}>
+                                <AnimatedTextGradient>
+                                    Launch App 🚀
+                                </AnimatedTextGradient>
+                            </Link>
                         </div>
                     </div>
                 </BackgroundLines>
