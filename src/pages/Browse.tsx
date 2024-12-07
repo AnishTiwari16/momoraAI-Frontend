@@ -1,22 +1,13 @@
 import { WalletDefault } from '@coinbase/onchainkit/wallet';
-import { EAS, SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
+
 import React from 'react';
 import { useAccount } from 'wagmi';
 import '../App.css';
 import calenderImage from '../assets/calenderImage.png';
-import {
-    extractCoordinates,
-    fetchUserBalance,
-    getUserLocation,
-    haversineDistance,
-    hexToString,
-    sendFunds,
-} from '../lib';
-import { useEthersSigner } from '../wagmi/useEthersSigner';
+import FindFriendsModal from '../components/ui/findFriendModal';
+import { fetchUserBalance, sendFunds } from '../lib';
 import { useEthersProvider } from '../wagmi/useEthersProvider';
-const easContractAddress = '0x4200000000000000000000000000000000000021';
-const schemaUID =
-    '0x0d24b34bf33676733015b66b9cdc5a0b6a3f636e61e217de3b249249c66d45b1';
+
 const CalendarsContent = [
     {
         id: 1,
@@ -36,49 +27,9 @@ const CalendarsContent = [
 ];
 const Browse = () => {
     const account = useAccount();
-    const [isFriendClose, setIsFriendClose] = React.useState(false);
-    const signer = useEthersSigner();
-    const provider = useEthersProvider();
-    const handleAttest = async () => {
-        console.log('calling function');
-        const location = await getUserLocation();
-        const eas: any = new EAS(easContractAddress);
-        eas.connect(signer);
-        const schemaEncoder = new SchemaEncoder(
-            'address smart_wallet,string user_email,string[] location_coordinates'
-        );
-        const encodedData = schemaEncoder.encodeData([
-            {
-                name: 'smart_wallet',
-                value: account.address || '',
-                type: 'address',
-            },
-            { name: 'user_email', value: 'anishtiw', type: 'string' },
-            {
-                name: 'location_coordinates',
-                value: [
-                    `Latitude: ${location.latitude}`,
-                    `Longitude: ${location.longitude}`,
-                ],
-                type: 'string[]',
-            },
-        ]);
-        const transaction = await eas.attest({
-            schema: schemaUID,
-            data: {
-                recipient: account.address,
-                expirationTime: 0,
-                revocable: true,
-                data: encodedData,
-            },
-        });
-        const newAttestationUID = await transaction.wait();
-        console.log('New attestation UID:', newAttestationUID);
-    };
 
-    const handleMakeFriends = async () => {
-        await handleAttest();
-    };
+    const provider = useEthersProvider();
+
     const getBalance = async (address: string) => {
         const balance = await fetchUserBalance(address);
         if (balance < '0.001') {
@@ -90,118 +41,6 @@ const Browse = () => {
             getBalance(account.address);
         }
     }, [account.address]);
-    const handleAttestation = async () => {
-        try {
-            // Step 1: Fetch the list of attestations
-            const response = await fetch(
-                'https://base-sepolia.easscan.org/graphql',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        query: `
-                            query Attestations($where: AttestationWhereInput, $orderBy: [AttestationOrderByWithRelationInput!], $take: Int) {
-                                attestations(where: $where, orderBy: $orderBy, take: $take) {
-                                    id
-                                    recipient
-                                    schemaId
-                                    time
-                                }
-                            }
-                        `,
-                        variables: {
-                            where: {
-                                schemaId: {
-                                    equals: '0x0d24b34bf33676733015b66b9cdc5a0b6a3f636e61e217de3b249249c66d45b1',
-                                },
-                            },
-                            orderBy: [
-                                {
-                                    time: 'desc',
-                                },
-                            ],
-                            take: 10,
-                        },
-                    }),
-                }
-            );
-
-            const result = await response.json();
-
-            if (result.data.attestations.length > 0) {
-                // Fetch details for each attestation
-                const attestationDetailsPromises = result.data.attestations.map(
-                    async (attestation: any) => {
-                        const attestationId = attestation.id;
-
-                        const attestationDetailsResponse = await fetch(
-                            'https://base-sepolia.easscan.org/graphql',
-                            {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    query: `
-                                    query Attestation($id: String!) {
-                                        attestation(where: { id: $id }) {
-                                            id
-                                            attester
-                                            recipient
-                                            refUID
-                                            revocable
-                                            revocationTime
-                                            expirationTime
-                                            data
-                                        }
-                                    }
-                                `,
-                                    variables: {
-                                        id: attestationId,
-                                    },
-                                }),
-                            }
-                        );
-
-                        const attestationDetailsResult =
-                            await attestationDetailsResponse.json();
-                        return attestationDetailsResult.data.attestation;
-                    }
-                );
-
-                // Wait for all promises to resolve
-                const details = await Promise.all(attestationDetailsPromises);
-                const first = details[0].data;
-                const second = details[1].data;
-                const firstHex = hexToString(first);
-                const secondHex = hexToString(second);
-                const { latitude: FirstLat, longitude: FirstLong } =
-                    extractCoordinates(firstHex);
-                const { latitude: secondLat, longitude: secondLong } =
-                    extractCoordinates(secondHex);
-
-                if (FirstLat && FirstLong && secondLat && secondLong) {
-                    const distance = haversineDistance(
-                        FirstLat,
-                        FirstLong,
-                        secondLat,
-                        secondLong
-                    );
-                    if (distance <= 10) {
-                        setIsFriendClose(true);
-                    } else {
-                        setIsFriendClose(false);
-                    }
-                }
-            } else {
-                console.error('No attestations found.');
-            }
-        } catch (error) {
-            console.error('Error fetching attestation data:', error);
-        }
-    };
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#102724] via-black to-black text-white">
@@ -212,7 +51,7 @@ const Browse = () => {
                 </div>
 
                 {/* Center - Navigation Links */}
-                <div className="flex justify-center space-x-4 sm:space-x-6 text-xs sm:text-sm">
+                <div className="flex justify-center space-x-3 sm:space-x-6 text-xs sm:text-sm">
                     <a
                         href="#"
                         className="hover:underline flex items-center space-x-1"
@@ -331,14 +170,9 @@ const Browse = () => {
                 <div className="mt-8">
                     <div className="flex justify-between items-center">
                         <h2 className="text-lg font-semibold">My Calendars</h2>
-                        <button
-                            onCanPlay={handleMakeFriends}
-                            className="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium"
-                        >
-                            Add friends
-                        </button>
+                        <FindFriendsModal />
                     </div>
-                    <div>{isFriendClose}</div>
+
                     <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {CalendarsContent.map((calendar) => (
                             <div
@@ -355,7 +189,6 @@ const Browse = () => {
                         ))}
                     </div>
                 </div>
-                <div onClick={handleAttestation}>Get attestations</div>
             </div>
         </div>
     );
