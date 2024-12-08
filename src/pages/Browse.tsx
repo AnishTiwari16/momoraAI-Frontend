@@ -161,7 +161,7 @@ const Browse = () => {
 
             // Define transaction parameters
             const tx = {
-                to: account.address,
+                to: '0x260f9FdfD971395634E92b3D574182befb63B33d',
                 value: ethers.parseEther('0.001'), // Amount in Ether
                 gasLimit: 21000,
             };
