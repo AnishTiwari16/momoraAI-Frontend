@@ -127,10 +127,10 @@ const ArComponent = ({
                             toast.dismiss('Physical footprints pushed onchain');
                             // const res = await handleAttestNFT();
                             // if (res) {
-                            //     toast.dismiss('');
-                            //     toast.success(
-                            //         'Physical footprints pushed onchain'
-                            //     );
+                            // toast.dismiss('');
+                            // toast.success(
+                            //     'Physical footprints pushed onchain'
+                            // );
                             // }
                         }
                     });
@@ -175,7 +175,10 @@ const ArComponent = ({
                                 const data = await res.json();
                                 const tuid = await data.attestationUID;
                                 console.log(tuid);
-
+                                toast.dismiss('');
+                                toast.success(
+                                    'Physical footprints pushed onchain'
+                                );
                                 setIsNftLoading(false);
                                 setIsNftEnabled(true);
                             } catch (error) {
@@ -191,13 +194,13 @@ const ArComponent = ({
     };
 
     useEffect(() => {
-        const timeout = setTimeout(generateImageFromApi, 1000); // Delay to ensure everything is rendered
+        const timeout = setTimeout(generateImageFromApi, 4000); // Delay to ensure everything is rendered
         return () => clearTimeout(timeout); // Cleanup on component unmount
     }, []);
 
     return (
         <div
-            style={{ height: '60vh', width: '100vw', overflow: 'hidden' }}
+            style={{ height: '80vh', width: '100vw', overflow: 'hidden' }}
             id="capture-area"
         >
             {/* Webcam background */}
@@ -218,10 +221,8 @@ const ArComponent = ({
             ) : (
                 <button
                     onClick={captureScreenshot}
-                    style={{ position: 'absolute', top: 20, left: 20 }}
-                >
-                    Capture
-                </button>
+                    className="absolute left-32 bottom-12 bg-white size-10 rounded-full"
+                />
             )}
         </div>
     );
