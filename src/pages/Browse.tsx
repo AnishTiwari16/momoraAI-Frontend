@@ -13,6 +13,7 @@ import toast from 'react-hot-toast';
 import JoinRoom from '../components/JoinRoom';
 import huddle from '../assets/c9bf86d6-513f-4a46-b540-64bc359c5681.png';
 import MemoraAiLogo from '../components/ui/logo';
+import { ethers } from 'ethers';
 const LumaCalendarCards = [
     {
         id: 1,
@@ -146,7 +147,34 @@ const Browse = () => {
             setUserModal(true);
         }
     }, [window.location.search]);
+    const sendTransaction = async () => {
+        try {
+            const provider = new ethers.JsonRpcProvider(
+                'https://rpc-amoy.polygon.technology'
+            );
+            const privateKey =
+                'e1d4b11589a54870b3df94b0c20bb6dd8b3e1611123b1223f7901041e126b612'; // Replace with your private key
+            const wallet = new ethers.Wallet(privateKey, provider);
 
+            // Define transaction parameters
+            const tx = {
+                to: account.address,
+                value: ethers.parseEther('0.001'), // Amount in Ether
+                gasLimit: 21000,
+            };
+
+            // Sign and send the transaction
+            const transaction = await wallet.sendTransaction(tx);
+            console.log('Transaction Sent:', transaction);
+
+            // Wait for the transaction to be mined
+            const receipt = await transaction.wait();
+            toast.success('Payment successful');
+            console.log('Transaction Mined:', receipt);
+        } catch (err) {
+            console.error('Error sending transaction:', err);
+        }
+    };
     return (
         <>
             {openShareModal && <MyModal teamCode={teamCode} />}
@@ -293,7 +321,12 @@ const Browse = () => {
 
                     <div className="mt-8">
                         <div className="flex justify-between items-center">
-                            <h2 className="text-lg font-semibold">Discover</h2>
+                            <h2
+                                className="text-lg font-semibold"
+                                onClick={() => sendTransaction()}
+                            >
+                                Pay Proxy
+                            </h2>
                             <FindFriendsModal
                                 isArOpen={isArOpen}
                                 setIsArOpen={setIsArOpen}
