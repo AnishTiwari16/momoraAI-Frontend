@@ -12,6 +12,7 @@ import MyModal from '../components/HuddleDialog';
 import toast from 'react-hot-toast';
 import JoinRoom from '../components/JoinRoom';
 import huddle from '../assets/c9bf86d6-513f-4a46-b540-64bc359c5681.png';
+import MemoraAiLogo from '../components/ui/logo';
 const LumaCalendarCards = [
     {
         id: 1,
@@ -156,8 +157,8 @@ const Browse = () => {
                         scrolling ? 'opacity-80' : 'opacity-100'
                     } transition-all duration-300`}
                 >
-                    <div className="flex items-center w-1/5 sm:w-1/20 space-x-2">
-                        <span className="text-xs">memoraAi</span>
+                    <div className="flex items-center w-2/5 sm:w-1/20 space-x-2">
+                        <MemoraAiLogo />
                     </div>
 
                     <div className=" justify-center w-full flex-wrap space-x-3 sm:space-x-6 text-xs sm:text-sm hidden md:flex">
