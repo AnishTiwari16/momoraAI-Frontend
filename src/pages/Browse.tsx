@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 import MyModal from '../components/HuddleDialog';
 import toast from 'react-hot-toast';
 import JoinRoom from '../components/JoinRoom';
-
+import huddle from '../assets/c9bf86d6-513f-4a46-b540-64bc359c5681.png';
 const LumaCalendarCards = [
     {
         id: 1,
@@ -299,10 +299,16 @@ const Browse = () => {
                             />
                         </div>
                         <div
-                            className="text-sm pt-10 underline cursor-pointer"
+                            className="text-sm pt-10 underline cursor-pointer flex items-center gap-x-4"
                             onClick={handleCreateRoom}
                         >
-                            Missing an old friend? Connect now
+                            Missing an old friend? Connect now{' '}
+                            <img
+                                src={huddle}
+                                alt="huddle"
+                                height={50}
+                                width={50}
+                            />
                         </div>
                         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {CalendarsContent.map((calendar) => (

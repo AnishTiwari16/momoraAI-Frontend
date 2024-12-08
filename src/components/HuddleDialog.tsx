@@ -33,7 +33,7 @@ export default function MyModal({ teamCode }: { teamCode: string }) {
                         </p>
                         <div className="mt-4">
                             <ShareSocial
-                                url={`http://localhost:5173/browse?code=${teamCode}`}
+                                url={`https://momora-ai-frontend.vercel.app/browse?code=${teamCode}`}
                                 socialTypes={[
                                     'whatsapp',
                                     'facebook',
