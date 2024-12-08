@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.makeStyles-container-9 {
+    background-color: #1c2233 !important;
+    border-radius: 20px;
+    color: #ffffff;
+}

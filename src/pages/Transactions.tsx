@@ -66,7 +66,7 @@ const Transactions = () => {
                 className={`opacity-100 flex items-center justify-between max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-opacity-80 transition-all duration-300`}
             >
                 <div className="flex items-center w-1/5 sm:w-1/20 space-x-2">
-                    <span className="text-xs">memoraAi</span>
+                    <span>memoraAi</span>
                 </div>
 
                 <div className=" justify-center w-full flex-wrap space-x-3 sm:space-x-6 text-xs sm:text-sm hidden md:flex">
