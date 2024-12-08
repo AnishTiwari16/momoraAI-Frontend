@@ -164,21 +164,21 @@ const ArComponent = ({
                             }
                             try {
                                 setIsNftLoading(true);
-                                const res = await fetch(
-                                    'https://ai-agent-kit-cdp-eas-production.up.railway.app/upload-image',
+                                await fetch(
+                                    'https://truenetwork-memoraai-production.up.railway.app/attest-event',
                                     {
                                         method: 'POST',
-                                        body: formData,
+                                        headers: {
+                                            'Content-Type': 'application/json', // Specify that the body is JSON
+                                        },
+                                        body: JSON.stringify({
+                                            eventData: account.address,
+                                        }),
                                     }
                                 );
 
-                                const data = await res.json();
-                                const tuid = await data.attestationUID;
-                                console.log(tuid);
                                 toast.dismiss('');
-                                toast.success(
-                                    'Physical footprints pushed onchain'
-                                );
+                                toast.success('Attestation successfull');
                                 setIsNftLoading(false);
                                 setIsNftEnabled(true);
                             } catch (error) {
