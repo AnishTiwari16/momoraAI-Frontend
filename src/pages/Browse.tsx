@@ -73,6 +73,7 @@ const CalendarsContent = [
 const Browse = () => {
     const account = useAccount();
     const [openShareModal, searchShareModal] = useState(false);
+    const [linkPol, setLinkPol] = useState<string | undefined>('');
     const [c, setC] = useState('');
     const [teamCode, setTeamCode] = useState('');
     const [isArOpen, setIsArOpen] = useState(false);
@@ -148,6 +149,8 @@ const Browse = () => {
         }
     }, [window.location.search]);
     const sendTransaction = async () => {
+        toast.dismiss();
+        toast.loading('Payment in progress');
         try {
             const provider = new ethers.JsonRpcProvider(
                 'https://rpc-amoy.polygon.technology'
@@ -169,8 +172,10 @@ const Browse = () => {
 
             // Wait for the transaction to be mined
             const receipt = await transaction.wait();
+            toast.dismiss();
             toast.success('Payment successful');
             console.log('Transaction Mined:', receipt);
+            setLinkPol(receipt?.hash);
         } catch (err) {
             console.error('Error sending transaction:', err);
         }
@@ -322,10 +327,32 @@ const Browse = () => {
                     <div className="mt-8">
                         <div className="flex justify-between items-center">
                             <h2
-                                className="text-lg font-semibold"
+                                className="text-lg font-semibold flex items-center gap-x-2"
                                 onClick={() => sendTransaction()}
                             >
                                 Pay Proxy
+                                {linkPol && (
+                                    <a
+                                        href={`https://amoy.polygonscan.com/tx/${linkPol}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            stroke="currentColor"
+                                            className="size-6"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+                                            />
+                                        </svg>
+                                    </a>
+                                )}
                             </h2>
                             <FindFriendsModal
                                 isArOpen={isArOpen}

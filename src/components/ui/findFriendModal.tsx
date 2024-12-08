@@ -29,6 +29,7 @@ export default function FindFriendsModal({
     const account = useAccount();
     const [isGifOpen, setIsGifOpen] = useState(false);
     const [image, setImage] = useState<string | null>(null);
+
     const [location, setLocation] = useState<any>({
         latitude: 0,
         longitude: 0,
