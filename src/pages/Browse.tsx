@@ -120,7 +120,7 @@ const Browse = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    title: 'test',
+                    title: 'MemoraAi room',
                 }),
             }
         );
@@ -267,7 +267,7 @@ const Browse = () => {
                             className="w-full sm:w-28 h-44  rounded-lg object-cover bg-center"
                         />
                         <div className="text-left w-full sm:text-left">
-                            <h2 className="text-lg sm:text-xl font-medium">
+                            <h2 className="text-lg sm:text-xl font-medium pt-4">
                                 {LumaCalendarCards[currentCardIndex].title}
                             </h2>
                             <p className="text-gray-400 mt-2 text-sm sm:text-base">

@@ -1,10 +1,21 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
-import { useLocalVideo, useRoom } from '@huddle01/react';
-import { useState } from 'react';
+import {
+    useLocalVideo,
+    usePeerIds,
+    useRemoteVideo,
+    useRoom,
+} from '@huddle01/react/hooks';
+import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
+import RemotePeer from './RemotePeer';
 const JoinRoom = ({ teamCode }: { teamCode: string }) => {
     let [isOpen, setIsOpen] = useState(true);
+    const videoRef = useRef<HTMLVideoElement>(null);
     const { enableVideo, isVideoOn } = useLocalVideo();
+    const { peerIds } = usePeerIds();
+    const { stream } = useRemoteVideo({
+        peerId: peerIds[0],
+    });
     const { joinRoom } = useRoom({
         onJoin: () => {
             console.log('Joined room');
@@ -23,7 +34,7 @@ const JoinRoom = ({ teamCode }: { teamCode: string }) => {
         toast.dismiss();
         toast.loading('Joining room');
         const res = await fetch(
-            `https://huddle-01-backend-production.up.railway.app/generate-token?roomId=${'esq-kgil-khh'}`
+            `https://huddle-01-backend-production.up.railway.app/generate-token?roomId=${teamCode}`
         );
         const data = await res.json();
         joinRoom({
@@ -34,6 +45,11 @@ const JoinRoom = ({ teamCode }: { teamCode: string }) => {
         toast.success('Room joined successfully');
         await enableVideo();
     };
+    useEffect(() => {
+        if (stream && videoRef.current) {
+            videoRef.current.srcObject = stream;
+        }
+    }, [stream]);
     return (
         <Dialog
             open={isOpen}
@@ -53,20 +69,13 @@ const JoinRoom = ({ teamCode }: { teamCode: string }) => {
                         >
                             Join Room
                         </DialogTitle>
+
                         {isVideoOn ? (
-                            <div className="text-white pt-5">
-                                <div className="pb-2">
-                                    Anish has joined the room
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="text-sm underline">
-                                        View Video
-                                    </div>
-                                    <div className="text-sm underline">
-                                        View Audio
-                                    </div>
-                                </div>
-                            </div>
+                            peerIds.map((peerId) =>
+                                peerId ? (
+                                    <RemotePeer key={peerId} peerId={peerId} />
+                                ) : null
+                            )
                         ) : (
                             <>
                                 <p className="mt-2 text-sm/6 text-white/50">
